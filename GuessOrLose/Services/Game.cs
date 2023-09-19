@@ -1,4 +1,5 @@
 ﻿using GuessOrLose.Data;
+using GuessOrLose.Exceptions;
 using GuessOrLose.Models;
 using Nito.AsyncEx;
 
@@ -21,68 +22,64 @@ namespace GuessOrLose.Services
         IAsyncEnumerable<Team> GetTeamsAsync();
     }
 
+    public class TeamTurn
+    {
+        public TeamTurn(Team team)
+        {
+            
+        }
+    }
+
+    public class Round
+    {
+        private readonly Game game;
+
+        public bool Finished { get; private set; }
+
+        public Round(Game game)
+        {
+            this.game = game;
+        }
+
+        public TeamTurn NextTurn()
+        {
+            return new 
+        }
+    }
+
     public class Game
     {
-        private readonly object _sync = new object();
+        private readonly Stack<Round> rounds = new();
+        private readonly IEnumerable<Player> players;
+        private readonly LoopEnumerator<Team> teams;
+        private readonly IEnumerable<Word> words;
 
-        private readonly Stack<GameRound> _rounds = new();
-        private readonly IPlayerService playerService;
-        private readonly IWordsProvider words;
-
-        public Game(IPlayerService playerService, IWordsProvider words)
+        public Game(IEnumerable<Player> players, ITeamsBuilder teamsBuilder, IEnumerable<Word> words)
         {
-            this.playerService = playerService;
+            this.players = players;
+            teams = new LoopEnumerator<Team>(teamsBuilder.BuildTeams(players));
+            
             this.words = words;
         }
 
-        public Task<RoundTurn> CreateNewRound()
+        public LoopEnumerator<Team> Teams => teams;
+
+        public Round StartRound()
         {
-
-        }
-
-        //public Task<IEnumerable<Player>> GetPlayersAsync()
-        //{
-        //    return Task.FromResult(_players.AsEnumerable());
-        //}
-    }
-
-    public abstract class GameRound
-    {
-        private readonly object _sync = new object();
-        private readonly Queue<Word> _unexplainedWords = new();
-        private readonly Queue<Word> _explainedWords = new();
-
-        public GameRound(Game game)
-        {
-        }
-
-        public abstract bool WordsCanBeSkipped { get; }
-
-        public Task<RoundTurn> StartTurn()
-        {
-
-        }
-
-        public Task<bool> Skip()
-        {
-            if (!WordsCanBeSkipped)
+            if (rounds.TryPeek(out var lastRound))
             {
-                return Task.FromResult(false);
+                if (!lastRound.Finished)
+                {
+                    throw new IncorrectOperationException("");
+                }
             }
 
+            if (rounds.Count == 3)
+            {
+                throw new IncorrectOperationException("");
+            }
 
-        }
-
-        public Task<bool> Next()
-        {
-
-        }
-    }
-    
-    public class RoundTurn
-    {
-        public RoundTurn(GameRound round, Team team)
-        {
+            return new(this);
         }
     }
 }
