@@ -1,5 +1,4 @@
-﻿using GuessOrLose.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace GuessOrLose.Services
 {
@@ -30,33 +29,5 @@ namespace GuessOrLose.Services
                 }
             }
         }
-    }
-
-    public class WordsDeck
-    {
-        private readonly IOrderRandomizer orderRandomizer;
-        private readonly List<Word> unusedWords = new();
-        private readonly List<Word> usedWords = new();
-
-        public WordsDeck(IEnumerable<Word> words, IOrderRandomizer orderRandomizer) 
-        {
-            unusedWords.AddRange(words);
-            this.orderRandomizer = orderRandomizer;
-        }
-
-        public bool TryPeekWord(out Word word)
-        {
-            if (unusedWords.Count > 0)
-            {
-                word = unusedWords[^1];
-                unusedWords.Remove(word);
-                return true;
-            }
-
-            word = null!;
-            return false;
-        }
-
-        
     }
 }

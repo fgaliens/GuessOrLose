@@ -1,6 +1,6 @@
 ﻿using GuessOrLose.Models;
 
-namespace GuessOrLose.Services
+namespace GuessOrLose.Game
 {
     public interface IWordsProvider
     {
