@@ -4,6 +4,7 @@ using GuessOrLose.Models;
 using GuessOrLose.Services;
 using Nito.AsyncEx;
 
+
 namespace GuessOrLose.Game
 {
     public class Game
@@ -23,6 +24,8 @@ namespace GuessOrLose.Game
 
             this.words = words;
             this.orderRandomizer = orderRandomizer;
+
+            //System.Reactive.NotificationKind
         }
 
         public LoopEnumerator<Team> Teams => teams;
@@ -50,7 +53,10 @@ namespace GuessOrLose.Game
                 throw new IncorrectOperationException("Game is over. Can't start new round");
             }
 
-            return new(this);
+            var round = new Round(this);
+            rounds.Push(round);
+
+            return round;
         }
 
         public Round GetCurrentRound()

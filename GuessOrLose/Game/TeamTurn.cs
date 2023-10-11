@@ -1,4 +1,5 @@
 ﻿using GuessOrLose.Models;
+using System.Reactive.Subjects;
 
 namespace GuessOrLose.Game
 {
@@ -10,5 +11,14 @@ namespace GuessOrLose.Game
         }
 
         public Team Team { get; }
+    }
+
+    public interface INotifier<T> : IObserver<T>, ISubject<T>
+    {
+        void IObserver<T>.OnError(Exception e)
+        { }
+
+        void IObserver<T>.OnCompleted()
+        { }
     }
 }
