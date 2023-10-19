@@ -18,9 +18,9 @@ namespace GuessOrLose.Messages
                 _services = services;
             }
 
-            public Builder AddHandlerFor<T>()
+            public Builder AddHandlerFor<TMessage>() where TMessage : Message, new()
             {
-                _services.AddSingleton(sp => Channel.CreateUnbounded<MessageBody<T>>(new UnboundedChannelOptions
+                _services.AddSingleton(sp => Channel.CreateUnbounded<MessageBody<TMessage>>(new UnboundedChannelOptions
                 {
                     SingleReader = true,
                     SingleWriter = false,
@@ -29,18 +29,28 @@ namespace GuessOrLose.Messages
 
                 _services.AddSingleton(sp =>
                 {
-                    var channel = sp.GetRequiredService<Channel<MessageBody<T>>>();
+                    var channel = sp.GetRequiredService<Channel<MessageBody<TMessage>>>();
                     return channel.Reader;
                 });
 
                 _services.AddSingleton(sp =>
                 {
-                    var channel = sp.GetRequiredService<Channel<MessageBody<T>>>();
+                    var channel = sp.GetRequiredService<Channel<MessageBody<TMessage>>>();
                     return channel.Writer;
                 });
 
-                _services.AddSingleton<IMessageWriter<T>, MessageWriter<T>>();
-                _services.AddSingleton<IMessageReader<T>, MessageReader<T>>();
+                _services.AddSingleton<IMessageWriter<TMessage>, MessageWriter<TMessage>>();
+                _services.AddSingleton<IMessageReader<TMessage>, MessageReader<TMessage>>();
+
+                return this;
+            }
+
+            public Builder AddHandlerFor<TMessage, THandler>() 
+                where TMessage : Message, new()
+                where THandler : MessageHandler<TMessage>
+            {
+                AddHandlerFor<TMessage>();
+                _services.AddSingleton<MessageHandler<TMessage>, THandler>();
 
                 return this;
             }

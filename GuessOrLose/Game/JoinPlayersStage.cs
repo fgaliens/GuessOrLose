@@ -7,27 +7,6 @@ using Nito.AsyncEx;
 
 namespace GuessOrLose.Game
 {
-    public interface IGamePipeline
-    {
-        public Guid Id { get; }
-        IGameStage ActiveStage { get; }
-        Task NotifyStageCompleteAsync(IGameStage stage);
-    }
-
-    public enum StageState
-    {
-        Ready,
-        InAction,
-        Finished
-    }
-
-    public interface IGameStage
-    {
-        StageState State { get; }
-        Task StartAsync(IGamePipeline game);
-        IEnumerable<IGameStage> Substages { get; }
-    }
-
     public class JoinPlayersStage : IGameStage
     {
         private readonly AsyncLock _lock = new();
