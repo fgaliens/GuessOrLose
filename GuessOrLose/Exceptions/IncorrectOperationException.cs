@@ -1,8 +1,13 @@
 ﻿namespace GuessOrLose.Exceptions
 {
-    public class IncorrectOperationException : Exception
+    public class IncorrectOperationException : GuessOrLoseException
     {
-        public IncorrectOperationException(string message) : base(message)
+        public static IncorrectOperationException Create(string message)
+        {
+            return new IncorrectOperationException(message);
+        }
+
+        public IncorrectOperationException(string message) : base(ExceptionCode.Unspecified, message)
         { }
     }
 }

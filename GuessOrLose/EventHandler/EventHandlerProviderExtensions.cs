@@ -2,7 +2,7 @@
 {
     public static class EventHandlerProviderExtensions
     {
-        public static void OnNext<T>(this IEventHandlerProvider<T> eventHandlerProvider, T value)
+        /*public static void OnNext<T>(this IEventHandlerProvider<T> eventHandlerProvider, T value)
         {
             eventHandlerProvider.OnNext(value);
         }
@@ -20,6 +20,6 @@
         public static IDisposable Subscribe<T>(this IEventHandlerProvider<T> eventHandlerProvider, IObserver<T> observer)
         {
             return eventHandlerProvider.Subscribe(observer);
-        }
+        }*/
     }
 }

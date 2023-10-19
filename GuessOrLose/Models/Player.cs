@@ -1,7 +1,8 @@
 ﻿namespace GuessOrLose.Models
 {
-    public record Player(Guid Id)
+    public record Player
     {
-        public string  Name { get; set; } = string.Empty;
+        public required Guid Id { get; init; }
+        public required string Name { get; init; }
     }
 }

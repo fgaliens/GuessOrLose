@@ -13,7 +13,7 @@ namespace GuessOrLose.Controllers
         [HttpGet("{id:guid}")]
         public IActionResult GetGamePage(Guid id)
         {
-            return Ok($"Game page: '{id}'");
+            return Ok($"_Game page: '{id}'");
         }
     }
 }

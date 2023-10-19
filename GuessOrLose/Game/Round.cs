@@ -4,14 +4,14 @@ namespace GuessOrLose.Game
 {
     public class Round
     {
-        private readonly Game game;
+        private readonly _Game game;
         private readonly WordsDeck wordsDeck;
 
         public bool Finished => WordsDeck.IsEmpty;
 
         public WordsDeck WordsDeck => wordsDeck;
 
-        public Round(Game game)
+        public Round(_Game game)
         {
             this.game = game;
             this.wordsDeck = new(game.Words, game.OrderRandomizer);

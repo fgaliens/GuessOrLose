@@ -1,6 +1,6 @@
 ﻿namespace GuessOrLose.Services
 {
-    public class OrderRandomizaer : IOrderRandomizer
+    public class OrderRandomizer : IOrderRandomizer
     {
         public void Randomize<T>(IList<T> list)
         {
