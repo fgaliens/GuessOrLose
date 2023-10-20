@@ -2,12 +2,9 @@
 {
     public class IncorrectOperationException : GuessOrLoseException
     {
-        public static IncorrectOperationException Create(string message)
+        public IncorrectOperationException(ExceptionCode code, string message) : base(code, message)
         {
-            return new IncorrectOperationException(message);
+            Detail = "Incorrect operation";
         }
-
-        public IncorrectOperationException(string message) : base(ExceptionCode.Unspecified, message)
-        { }
     }
 }

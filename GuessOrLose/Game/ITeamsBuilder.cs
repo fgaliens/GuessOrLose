@@ -1,4 +1,5 @@
 ﻿using GuessOrLose.Models;
+using GuessOrLose.Players;
 
 namespace GuessOrLose.Game
 {

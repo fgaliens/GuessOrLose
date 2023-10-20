@@ -1,16 +1,17 @@
 ﻿namespace GuessOrLose.Exceptions
 {
-    public class GuessOrLoseException : Exception
+    public interface IGuessOrLoseException<TException> where TException : GuessOrLoseException
     {
-        public GuessOrLoseException(ExceptionCode exceptionCode)
-        {
-            Code = exceptionCode;
-        }
+        abstract static TException Create(ExceptionCode exceptionCode, string message);
+    }
 
+    public abstract class GuessOrLoseException : Exception
+    {
         public GuessOrLoseException(ExceptionCode exceptionCode, string message) : base(message) 
         { 
             Code = exceptionCode; 
         }
+
         public GuessOrLoseException(ExceptionCode exceptionCode, string message, Exception inner) : base(message, inner) 
         { 
             Code = exceptionCode; 

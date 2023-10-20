@@ -1,5 +1,6 @@
 ﻿using GuessOrLose.Game;
 using GuessOrLose.Messages;
+using GuessOrLose.Players;
 
 namespace GuessOrLose.Models.Messages
 {

@@ -18,7 +18,7 @@ namespace GuessOrLose.Messages
             fillMessage(message);
             if (!message.IsValid())
             {
-                throw new GuessOrLoseException(ExceptionCode.MessageIsNotValid, "Message is not valid");
+                throw new ValidationException(ExceptionCode.MessageIsNotValid, "Message is not valid");
             }
 
             var messageBody = new MessageBody<T>
@@ -31,7 +31,7 @@ namespace GuessOrLose.Messages
 
             if (!written)
             {
-                throw new GuessOrLoseException(ExceptionCode.MessageWasNotWritten, "Message wasn't written to channel");
+                throw new IncorrectOperationException(ExceptionCode.MessageWasNotWritten, "Message wasn't written to channel");
             }
         }
 

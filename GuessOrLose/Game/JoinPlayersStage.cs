@@ -1,8 +1,8 @@
 ﻿using GuessOrLose.Data;
 using GuessOrLose.Exceptions;
 using GuessOrLose.Messages;
-using GuessOrLose.Models;
 using GuessOrLose.Models.Messages;
+using GuessOrLose.Players;
 using Nito.AsyncEx;
 
 namespace GuessOrLose.Game
@@ -10,7 +10,7 @@ namespace GuessOrLose.Game
     public class JoinPlayersStage : IGameStage
     {
         private readonly AsyncLock _lock = new();
-        private readonly ISingleValueStorage<Player, IGamePipeline> _playersStorage;
+        private readonly IPlayerService _playersService;
         private readonly IMessageWriter<JoinPlayersStageMessages.StateChanged> _stateChangedMessageWriter;
         private readonly IMessageWriter<JoinPlayersStageMessages.PlayerJoined> _playerJoinedMessageWriter;
         private readonly IMessageWriter<JoinPlayersStageMessages.PlayerReadyToStart> _playerReadyToStartMessageWriter;
@@ -18,7 +18,7 @@ namespace GuessOrLose.Game
         private readonly HashSet<Player> _readyUsers;
 
         public JoinPlayersStage(
-            ISingleValueStorage<Player, IGamePipeline> playersStorage,
+            IPlayerService playersService,
             IEqualityComparer<Player> playersEqualityComparer,
             IMessageWriter<JoinPlayersStageMessages.StateChanged> stateChangedMessageWriter,
             IMessageWriter<JoinPlayersStageMessages.PlayerJoined> playerJoinedMessageWriter,
@@ -26,7 +26,7 @@ namespace GuessOrLose.Game
         {
             State = StageState.Ready;
 
-            _playersStorage = playersStorage;
+            _playersService = playersService;
             _stateChangedMessageWriter = stateChangedMessageWriter;
             _playerJoinedMessageWriter = playerJoinedMessageWriter;
             _playerReadyToStartMessageWriter = playerReadyToStartMessageWriter;
@@ -35,7 +35,7 @@ namespace GuessOrLose.Game
             _readyUsers = new HashSet<Player>(playersEqualityComparer);
         }
 
-        public IGamePipeline? Pipeline { get; private set; }
+        public IGamePipeline? Game { get; private set; }
 
         public StageState State { get; private set; }
 
@@ -47,7 +47,7 @@ namespace GuessOrLose.Game
 
             ThrowIfStateIsNot(StageState.Ready, nameof(StartAsync));
 
-            Pipeline = gamePipeline;
+            Game = gamePipeline;
             State = StageState.InAction;
 
             await ChangeStateAsync(StageState.InAction);
@@ -59,13 +59,7 @@ namespace GuessOrLose.Game
 
             ThrowIfStateIsNot(StageState.InAction, nameof(JoinAsync));
 
-            if (await _playersStorage.ContainsKeyAsync(player))
-            {
-                throw new ActionForbiddenException(ExceptionCode.PlayerNotInThisGame,
-                    $"Player is participant of the other game");
-            }
-
-            await _playersStorage.AddAsync(player, Pipeline!);
+            await _playersService.AddToGameAsync(player, Game!);
             _joinedUsers.Add(player);
         }
 
@@ -75,11 +69,11 @@ namespace GuessOrLose.Game
 
             ThrowIfStateIsNot(StageState.InAction, nameof(PlayerIsReadyToStartAsync));
 
-            var game = await _playersStorage.GetValueAsync(player);
-            if (game.TryGetValue(out var gamePipeline))
+            if (await _playersService.IsPlayerInGameAsync(player, Game!))
             {
                 _readyUsers.Add(player);
-                if (_joinedUsers.Count == _readyUsers.Count)
+                var count = await _playersService.CountPlayersInGameAsync(Game!);
+                if (count == _joinedUsers.Count)
                 {
                     await ChangeStateAsync(StageState.Finished);
                     return;
@@ -99,7 +93,7 @@ namespace GuessOrLose.Game
 
             if (newState == StageState.Finished)
             {
-                await Pipeline!.NotifyStageCompleteAsync(this);
+                await Game!.NotifyStageCompleteAsync(this);
             }
 
             await _stateChangedMessageWriter.WriteAsync(message =>

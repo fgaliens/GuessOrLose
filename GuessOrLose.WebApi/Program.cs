@@ -1,21 +1,42 @@
+using GuessOrLose.WebApi;
+using GuessOrLose.WebApi.Authentication;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.AddAuthentication(cfg =>
+{
+    cfg.AddScheme<PlayerAuthenticationHandler>(AuthenticationDefaults.TokenBasedScheme, "Token based authentication");
+});
+
+builder.Services.AddAuthorization(auth => 
+{
+    auth.AddPolicy(AuthorizationDefaults.PlayerPolicy, policy =>
+    {
+        policy
+            .AddAuthenticationSchemes(AuthenticationDefaults.TokenBasedScheme)
+            .RequireClaim(ClaimTypes.Id)
+            .RequireClaim(ClaimTypes.Name);
+    });
+
+    auth.DefaultPolicy = auth.GetPolicy(AuthorizationDefaults.PlayerPolicy)!;
+});
+
+builder.Services.AddWebApiServices();
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

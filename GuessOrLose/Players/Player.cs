@@ -1,4 +1,4 @@
-﻿namespace GuessOrLose.Models
+﻿namespace GuessOrLose.Players
 {
     public record Player
     {

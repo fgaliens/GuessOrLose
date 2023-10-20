@@ -15,4 +15,8 @@
     <ProjectReference Include="..\GuessOrLose\GuessOrLose.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="MessageHandlers\" />
+  </ItemGroup>
+
 </Project>
