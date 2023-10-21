@@ -1,7 +1,7 @@
 ﻿using GuessOrLose.Models;
 using GuessOrLose.Services;
 
-namespace GuessOrLose.Game
+namespace GuessOrLose.GameServices
 {
     public class WordsDeck
     {

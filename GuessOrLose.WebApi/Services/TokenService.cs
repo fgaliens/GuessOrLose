@@ -29,6 +29,12 @@ namespace GuessOrLose.WebApi.Services
             return token;
         }
 
+        public Task<string> GenerateForIdAsync(Guid id)
+        {
+            var token = GenerateForId(id);
+            return Task.FromResult(token);
+        }
+
         public bool TryFindId(string token, out Guid id)
         {
             if (_tokenStore.TryGetValue(token, out id))
@@ -38,6 +44,16 @@ namespace GuessOrLose.WebApi.Services
 
             id = Guid.Empty;
             return false;
+        }
+
+        public AwaitableValueContainer<Guid> FindIdAsync(string token)
+        {
+            if (TryFindId(token, out Guid id))
+            {
+                return new AwaitableValueContainer<Guid>(id);
+            }
+
+            return AwaitableValueContainer<Guid>.Empty;
         }
     }
 }

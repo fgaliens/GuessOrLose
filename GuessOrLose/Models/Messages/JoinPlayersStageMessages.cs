@@ -1,4 +1,5 @@
-﻿using GuessOrLose.Game;
+﻿using GuessOrLose.GameServices;
+using GuessOrLose.GameServices.Stages;
 using GuessOrLose.Messages;
 using GuessOrLose.Players;
 

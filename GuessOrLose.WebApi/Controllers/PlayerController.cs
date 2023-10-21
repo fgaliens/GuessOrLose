@@ -22,12 +22,12 @@ namespace GuessOrLose.Controllers
 
         [AllowAnonymous]
         [HttpPost("log-in")]
-        public IActionResult LogIn([FromBody] LogInRequest request)
+        public async Task<IActionResult> LogIn([FromBody] LogInRequest request)
         {
-            var id = _playersStorage.CreatePlayer(request.Name);
+            var id = await _playersStorage.CreatePlayerAsync(request.Name);
             try
             {
-                var token = _tokenService.GenerateForId(id);
+                var token = await _tokenService.GenerateForIdAsync(id);
 
                 var response = new LogInResponse
                 {
@@ -39,7 +39,7 @@ namespace GuessOrLose.Controllers
             }
             catch
             {
-                _playersStorage.RemovePlayer(id);
+                await _playersStorage.RemovePlayerAsync(id);
                 return BadRequest();
             }
         }

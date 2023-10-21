@@ -1,9 +1,9 @@
-﻿namespace GuessOrLose.Game
+﻿namespace GuessOrLose.GameServices
 {
     public interface IGameStage
     {
         StageState State { get; }
-        Task StartAsync(IGamePipeline game);
+        Task StartAsync(IGame game);
         IEnumerable<IGameStage> Substages { get; }
     }
 }

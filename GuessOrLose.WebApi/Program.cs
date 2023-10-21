@@ -1,3 +1,4 @@
+using GuessOrLose;
 using GuessOrLose.WebApi;
 using GuessOrLose.WebApi.Authentication;
 
@@ -21,6 +22,7 @@ builder.Services.AddAuthorization(auth =>
     auth.DefaultPolicy = auth.GetPolicy(AuthorizationDefaults.PlayerPolicy)!;
 });
 
+builder.Services.AddGuessOrLoseGame();
 builder.Services.AddWebApiServices();
 
 builder.Services.AddControllers();

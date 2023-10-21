@@ -12,21 +12,7 @@ namespace GuessOrLose.WebApi
 
             services.AddSingleton<ITokenService, TokenService>();
             services.AddSingleton<IPlayersStorage, PlayersStorage>();
-            services.AddScoped(sp =>
-            {
-                var httpContext = sp.GetRequiredService<IHttpContextAccessor>()
-                    .HttpContext;
-
-                if (httpContext?.User is null)
-                {
-                    throw new InvalidOperationException("Can`t access to User field in HttpContext");
-                }
-
-                var storage = sp.GetRequiredService<IPlayersStorage>();
-
-                var id = httpContext.User.GetPlayerId();
-                return storage.GetPlayer(id);
-            });
+            services.AddScoped<IPlayerProvider, PlayerProvider>();
 
             return services;
         }

@@ -1,11 +1,10 @@
-﻿using GuessOrLose.Data;
-using GuessOrLose.Exceptions;
+﻿using GuessOrLose.Exceptions;
 using GuessOrLose.Messages;
 using GuessOrLose.Models.Messages;
 using GuessOrLose.Players;
 using Nito.AsyncEx;
 
-namespace GuessOrLose.Game
+namespace GuessOrLose.GameServices.Stages
 {
     public class JoinPlayersStage : IGameStage
     {
@@ -35,13 +34,13 @@ namespace GuessOrLose.Game
             _readyUsers = new HashSet<Player>(playersEqualityComparer);
         }
 
-        public IGamePipeline? Game { get; private set; }
+        public IGame? Game { get; private set; }
 
         public StageState State { get; private set; }
 
         public IEnumerable<IGameStage> Substages => Enumerable.Empty<IGameStage>();
 
-        public async Task StartAsync(IGamePipeline gamePipeline)
+        public async Task StartAsync(IGame gamePipeline)
         {
             using var lockScope = await _lock.LockAsync();
 
@@ -96,12 +95,12 @@ namespace GuessOrLose.Game
                 await Game!.NotifyStageCompleteAsync(this);
             }
 
-            await _stateChangedMessageWriter.WriteAsync(message =>
-            {
-                message.Source = this;
-                message.PreviousState = previousState;
-                message.CurrentState = newState;
-            });
+            //await _stateChangedMessageWriter.WriteAsync(message =>
+            //{
+            //    message.Source = this;
+            //    message.PreviousState = previousState;
+            //    message.CurrentState = newState;
+            //});
         }
 
         private void ThrowIfStateIsNot(StageState expectedState, string caller)

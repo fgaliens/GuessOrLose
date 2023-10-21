@@ -67,6 +67,19 @@ namespace GuessOrLose.WebApi.Storages
             }
         }
 
+        public Task<Guid> CreatePlayerAsync(string playerName)
+        {
+            try
+            {
+                var id = CreatePlayer(playerName);
+                return Task.FromResult(id);
+            }
+            catch (Exception e)
+            {
+                return Task.FromException<Guid>(e);
+            }
+        }
+
         public Player GetPlayer(Guid id)
         {
             lock (_sync)
@@ -80,11 +93,24 @@ namespace GuessOrLose.WebApi.Storages
             throw new ObjectNotFoundException(ExceptionCode.PlayerNotFound, id, nameof(PlayersStorage));
         }
 
+        public Task<Player> GetPlayerAsync(Guid id)
+        {
+            try
+            {
+                var player = GetPlayer(id);
+                return Task.FromResult(player);
+            }
+            catch (Exception ex)
+            {
+                return Task.FromException<Player>(ex);
+            }
+        }
+
         public bool RemovePlayer(Guid id)
         {
-            lock ( _sync)
+            lock (_sync)
             {
-                if ( _players.TryGetValue(id, out var player))
+                if (_players.TryGetValue(id, out var player))
                 {
                     _players.Remove(id);
                     _playerNames.Remove(player.Name);
@@ -93,6 +119,12 @@ namespace GuessOrLose.WebApi.Storages
             }
 
             return false;
+        }
+
+        public Task<bool> RemovePlayerAsync(Guid id)
+        {
+            var removed = RemovePlayer(id);
+            return Task.FromResult(removed);
         }
 
         private class PlayerNameComparer : IEqualityComparer<string>

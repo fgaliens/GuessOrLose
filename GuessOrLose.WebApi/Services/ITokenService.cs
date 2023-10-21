@@ -2,7 +2,7 @@
 {
     public interface ITokenService
     {
-        string GenerateForId(Guid id);
-        bool TryFindId(string token, out Guid id);
+        Task<string> GenerateForIdAsync(Guid id);
+        AwaitableValueContainer<Guid> FindIdAsync(string token);
     }
 }

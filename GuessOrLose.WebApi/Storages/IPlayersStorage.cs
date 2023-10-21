@@ -4,8 +4,8 @@ namespace GuessOrLose.WebApi.Storages
 {
     public interface IPlayersStorage
     {
-        Guid CreatePlayer(string playerName);
-        Player GetPlayer(Guid id);
-        bool RemovePlayer(Guid id);
+        Task<Guid> CreatePlayerAsync(string playerName);
+        Task<Player> GetPlayerAsync(Guid id);
+        Task<bool> RemovePlayerAsync(Guid id);
     }
 }

@@ -1,25 +1,25 @@
 ﻿using GuessOrLose.Exceptions;
-using GuessOrLose.Game;
+using GuessOrLose.GameServices;
 
 namespace GuessOrLose.Players
 {
     public class PlayerService : IPlayerService
     {
-        private readonly IEqualityComparer<IGamePipeline> _gameEqualityComparer;
-        private readonly Dictionary<Player, IGamePipeline> _playerToGameDict;
-        private readonly Dictionary<IGamePipeline, List<Player>> _gameToPlayersDict;
+        private readonly IEqualityComparer<IGame> _gameEqualityComparer;
+        private readonly Dictionary<Player, IGame> _playerToGameDict;
+        private readonly Dictionary<IGame, List<Player>> _gameToPlayersDict;
         private readonly object _sync = new();
 
         public PlayerService(
             IEqualityComparer<Player> playerEqualityComparer,
-            IEqualityComparer<IGamePipeline> gameEqualityComparer)
+            IEqualityComparer<IGame> gameEqualityComparer)
         {
-            _playerToGameDict = new Dictionary<Player, IGamePipeline>(playerEqualityComparer);
-            _gameToPlayersDict = new Dictionary<IGamePipeline, List<Player>>(gameEqualityComparer);
+            _playerToGameDict = new Dictionary<Player, IGame>(playerEqualityComparer);
+            _gameToPlayersDict = new Dictionary<IGame, List<Player>>(gameEqualityComparer);
             _gameEqualityComparer = gameEqualityComparer;
         }
 
-        public Task AddToGameAsync(Player player, IGamePipeline game)
+        public Task AddToGameAsync(Player player, IGame game)
         {
             lock (_sync)
             {
@@ -41,7 +41,7 @@ namespace GuessOrLose.Players
             }
         }
 
-        public Task<int> CountPlayersInGameAsync(IGamePipeline game)
+        public Task<int> CountPlayersInGameAsync(IGame game)
         {
             lock (_sync)
             {
@@ -54,7 +54,7 @@ namespace GuessOrLose.Players
             return Task.FromResult(0);
         }
 
-        public Task<IGamePipeline> GetGameByPlayerAsync(Player player)
+        public Task<IGame> GetGameByPlayerAsync(Player player)
         {
             lock (_sync)
             {
@@ -64,12 +64,12 @@ namespace GuessOrLose.Players
                 }
             }
 
-            return Task.FromException<IGamePipeline>(
+            return Task.FromException<IGame>(
                 new ObjectNotFoundException(ExceptionCode.GameNotFound, player, nameof(GetGameByPlayerAsync)));
         }
 
 #pragma warning disable CS1998 // В асинхронном методе отсутствуют операторы await, будет выполнен синхронный метод
-        public async IAsyncEnumerable<Player> GetPlayersByGameAsync(IGamePipeline game)
+        public async IAsyncEnumerable<Player> GetPlayersByGameAsync(IGame game)
         {
             lock (_sync)
             {
@@ -85,7 +85,7 @@ namespace GuessOrLose.Players
         }
 #pragma warning restore CS1998 
 
-        public Task<bool> IsPlayerInGameAsync(Player player, IGamePipeline game)
+        public Task<bool> IsPlayerInGameAsync(Player player, IGame game)
         {
             lock (_sync)
             {
@@ -97,6 +97,15 @@ namespace GuessOrLose.Players
             }
 
             return Task.FromResult(false);
+        }
+
+        public Task<bool> IsPlayerInGameAsync(Player player)
+        {
+            lock (_sync)
+            {
+                var isInGame = _playerToGameDict.ContainsKey(player);
+                return Task.FromResult(isInGame);
+            }
         }
 
         public Task RemoveFromGameAsync(Player player)

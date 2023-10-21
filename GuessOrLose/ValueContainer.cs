@@ -2,32 +2,52 @@
 {
     public readonly struct ValueContainer<TValue>
     {
+        private readonly TValue? _value;
+
         public ValueContainer(TValue value)
         {
-            Value = value;
+            _value = value;
             HasValue = true;
         }
 
         public ValueContainer()
         {
-            Value = default;
+            _value = default;
             HasValue = false;
         }
 
-        public TValue? Value { get; }
+        public TValue Value => HasValue ? _value! : throw new InvalidCastException();
 
         public bool HasValue { get; }
 
         public bool TryGetValue(out TValue? value)
         {
-            value = Value;
-            return HasValue;
+            if (HasValue)
+            {
+                value = Value;
+                return true;
+            }
+
+            value = default;
+            return false;
+        }
+
+        public override string ToString()
+        {
+            if (HasValue)
+            {
+                return Value?.ToString() ?? string.Empty;
+            }
+            else
+            {
+                return $$"""{ Empty value container of type {{typeof(TValue)}} }""";
+            }
         }
 
         public static ValueContainer<TValue> Empty => new();
 
         public static implicit operator ValueContainer<TValue>(TValue value) => new(value);
 
-        public static explicit operator TValue(ValueContainer<TValue> container) => container.HasValue ? container.Value! : throw new InvalidCastException();
+        public static implicit operator TValue(ValueContainer<TValue> container) => container.Value;
     }
 }

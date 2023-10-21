@@ -1,4 +1,4 @@
-﻿namespace GuessOrLose.Game
+﻿namespace GuessOrLose.GameServices
 {
     public enum StageState
     {
