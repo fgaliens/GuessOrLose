@@ -8,6 +8,7 @@
         PlayerNotInThisGame = 1002,
         PlayerIsInOtherGame = 1003,
         UnexpectedGameState = 1004,
+        UnexpectedGameStage = 1005,
         NotFound = 2000,
         GameNotFound = 2001,
         PlayerNotFound = 2002,
@@ -17,6 +18,6 @@
         Validation = 4000,
         IncorrectName = 4001,
         InternalException = 5000,
-        DuplicatedId = 5001
+        DuplicatedId = 5001,
     }
 }

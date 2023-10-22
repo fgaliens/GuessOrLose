@@ -17,12 +17,18 @@ namespace GuessOrLose.Controllers
         private readonly IPlayerProvider _playerProvider;
         private readonly IGameService _gameService;
         private readonly IPlayerService _playerService;
+        private readonly IStageProvider<JoinPlayersStage> _stageProvider;
 
-        public GameController(IPlayerProvider playerProvider, IGameService gameService, IPlayerService playerService)
+        public GameController(
+            IPlayerProvider playerProvider, 
+            IGameService gameService, 
+            IPlayerService playerService,
+            IStageProvider<JoinPlayersStage> stageProvider)
         {
             _playerProvider = playerProvider;
             _gameService = gameService;
             _playerService = playerService;
+            _stageProvider = stageProvider;
         }
 
         [HttpPost("create")]
@@ -37,9 +43,11 @@ namespace GuessOrLose.Controllers
             }
 
             var game = await _gameService.CreateGameAsync();
-            if (game.ActiveStage is JoinPlayersStage joinStage)
+
+            if (await _stageProvider.IsStageAvailable())
             {
-                await joinStage.JoinAsync(player);
+                var stage = await _stageProvider.GetActiveStageAsync();
+                await stage.JoinAsync(player);
 
                 var response = new CreateGameResponse
                 {
@@ -52,7 +60,22 @@ namespace GuessOrLose.Controllers
             {
                 throw new IncorrectOperationException(ExceptionCode.UnexpectedGameState, $"Unexpected stage of the game");
             }
-            
+
+            //if (game.ActiveStage is JoinPlayersStage joinStage)
+            //{
+            //    await joinStage.JoinAsync(player);
+
+            //    var response = new CreateGameResponse
+            //    {
+            //        Id = game.Id
+            //    };
+
+            //    return Ok(response);
+            //}
+            //else
+            //{
+            //    throw new IncorrectOperationException(ExceptionCode.UnexpectedGameState, $"Unexpected stage of the game");
+            //}
         }
     }
 }

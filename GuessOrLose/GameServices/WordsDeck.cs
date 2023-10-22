@@ -1,5 +1,5 @@
-﻿using GuessOrLose.Models;
-using GuessOrLose.Services;
+﻿using GuessOrLose.Services;
+using GuessOrLose.Words;
 
 namespace GuessOrLose.GameServices
 {

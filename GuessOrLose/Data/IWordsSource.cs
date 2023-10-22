@@ -1,4 +1,5 @@
 ﻿using GuessOrLose.Data.Models;
+using GuessOrLose.Words;
 
 namespace GuessOrLose.Data
 {

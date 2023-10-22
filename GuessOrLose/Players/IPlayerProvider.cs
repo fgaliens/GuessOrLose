@@ -1,6 +1,4 @@
-﻿using GuessOrLose.Players;
-
-namespace GuessOrLose.WebApi.Services
+﻿namespace GuessOrLose.Players
 {
     public interface IPlayerProvider
     {

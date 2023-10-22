@@ -1,6 +1,8 @@
 using GuessOrLose;
+using GuessOrLose.Controllers;
 using GuessOrLose.WebApi;
 using GuessOrLose.WebApi.Authentication;
+using GuessOrLose.WebApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,10 +24,14 @@ builder.Services.AddAuthorization(auth =>
     auth.DefaultPolicy = auth.GetPolicy(AuthorizationDefaults.PlayerPolicy)!;
 });
 
-builder.Services.AddGuessOrLoseGame();
+builder.Services.AddGuessOrLoseGame(cfg =>
+{
+    cfg.PlayerServices.SetPlayerProvider<PlayerProvider>();
+});
 builder.Services.AddWebApiServices();
 
 builder.Services.AddControllers();
+builder.Services.AddSignalR();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -42,5 +48,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<ClientsHub>("/api/game/ws");
 
 app.Run();

@@ -1,4 +1,4 @@
-﻿namespace GuessOrLose.Data.Models
+﻿namespace GuessOrLose.Words
 {
     public record WordFilter(int Limit);
 }

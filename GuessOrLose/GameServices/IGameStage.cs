@@ -4,6 +4,5 @@
     {
         StageState State { get; }
         Task StartAsync(IGame game);
-        IEnumerable<IGameStage> Substages { get; }
     }
 }

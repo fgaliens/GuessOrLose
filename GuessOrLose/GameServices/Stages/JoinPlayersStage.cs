@@ -1,6 +1,4 @@
 ﻿using GuessOrLose.Exceptions;
-using GuessOrLose.Messages;
-using GuessOrLose.Models.Messages;
 using GuessOrLose.Players;
 using Nito.AsyncEx;
 
@@ -8,28 +6,18 @@ namespace GuessOrLose.GameServices.Stages
 {
     public class JoinPlayersStage : IGameStage
     {
-        private readonly AsyncLock _lock = new();
+        private readonly AsyncLock _sync = new();
         private readonly IPlayerService _playersService;
-        private readonly IMessageWriter<JoinPlayersStageMessages.StateChanged> _stateChangedMessageWriter;
-        private readonly IMessageWriter<JoinPlayersStageMessages.PlayerJoined> _playerJoinedMessageWriter;
-        private readonly IMessageWriter<JoinPlayersStageMessages.PlayerReadyToStart> _playerReadyToStartMessageWriter;
         private readonly HashSet<Player> _joinedUsers;
         private readonly HashSet<Player> _readyUsers;
 
         public JoinPlayersStage(
             IPlayerService playersService,
-            IEqualityComparer<Player> playersEqualityComparer,
-            IMessageWriter<JoinPlayersStageMessages.StateChanged> stateChangedMessageWriter,
-            IMessageWriter<JoinPlayersStageMessages.PlayerJoined> playerJoinedMessageWriter,
-            IMessageWriter<JoinPlayersStageMessages.PlayerReadyToStart> playerReadyToStartMessageWriter)
+            IEqualityComparer<Player> playersEqualityComparer)
         {
             State = StageState.Ready;
 
             _playersService = playersService;
-            _stateChangedMessageWriter = stateChangedMessageWriter;
-            _playerJoinedMessageWriter = playerJoinedMessageWriter;
-            _playerReadyToStartMessageWriter = playerReadyToStartMessageWriter;
-
             _joinedUsers = new HashSet<Player>(playersEqualityComparer);
             _readyUsers = new HashSet<Player>(playersEqualityComparer);
         }
@@ -38,11 +26,9 @@ namespace GuessOrLose.GameServices.Stages
 
         public StageState State { get; private set; }
 
-        public IEnumerable<IGameStage> Substages => Enumerable.Empty<IGameStage>();
-
         public async Task StartAsync(IGame gamePipeline)
         {
-            using var lockScope = await _lock.LockAsync();
+            using var lockScope = await _sync.LockAsync();
 
             ThrowIfStateIsNot(StageState.Ready, nameof(StartAsync));
 
@@ -54,7 +40,7 @@ namespace GuessOrLose.GameServices.Stages
 
         public async Task JoinAsync(Player player)
         {
-            using var lockScope = await _lock.LockAsync();
+            using var lockScope = await _sync.LockAsync();
 
             ThrowIfStateIsNot(StageState.InAction, nameof(JoinAsync));
 
@@ -64,7 +50,7 @@ namespace GuessOrLose.GameServices.Stages
 
         public async Task PlayerIsReadyToStartAsync(Player player)
         {
-            using var lockScope = await _lock.LockAsync();
+            using var lockScope = await _sync.LockAsync();
 
             ThrowIfStateIsNot(StageState.InAction, nameof(PlayerIsReadyToStartAsync));
 
